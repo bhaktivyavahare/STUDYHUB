@@ -1,0 +1,66 @@
+﻿# ─── Render Infrastructure-as-Code for StudyHub Backend ───────────────────
+# Docs: https://render.com/docs/blueprint-spec
+#
+# Usage:
+#   1. Push this file to your GitHub repo root.
+#   2. In Render Dashboard → New → Blueprint → connect your repo.
+#   3. Render will read this file and create the web service automatically.
+#   4. After creation, add the secret environment variables listed below
+#      in the Render Dashboard under the service Environment tab.
+
+services:
+  - type: web
+    name: studyhub-api
+    runtime: node
+    region: oregon        # Change to: ohio, virginia, frankfurt, singapore, ohio
+    plan: free            # free | starter | standard | pro
+
+    # Root of the backend relative to the repo root
+    rootDir: backend
+
+    # Command Render uses to install dependencies
+    buildCommand: npm install
+
+    # Command Render uses to start the server
+    startCommand: npm start
+
+    # Render injects PORT automatically — your server.js already reads process.env.PORT
+    envVars:
+      # ── Non-secret values (safe to commit) ────────────────────────────────
+      - key: NODE_ENV
+        value: production
+
+      - key: CLOUDINARY_FOLDER
+        value: studyhub-resources
+
+      # ── Secret values — set manually in the Render Dashboard ──────────────
+      # Go to: Render Dashboard → studyhub-api → Environment → Add Environment Variable
+      #
+      # Do NOT paste real secrets here. Add them through the dashboard UI.
+
+      - key: DB_URL
+        sync: false       # sync:false = Render will prompt you to fill this in
+
+      - key: JWT_SECRET
+        sync: false
+
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+
+      - key: CLOUDINARY_API_KEY
+        sync: false
+
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+
+      # Set this after you deploy the Netlify frontend and get its URL
+      # Example: https://studyhub.netlify.app
+      - key: FRONTEND_URL
+        sync: false
+
+    # Auto-deploy when you push to the default branch
+    autoDeploy: true
+
+    # Free plan spins down after 15 min of inactivity.
+    # First request after spin-down takes ~30s (cold start).
+    # Upgrade to Starter ($7/mo) to avoid this.
