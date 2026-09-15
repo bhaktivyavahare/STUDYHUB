@@ -14,6 +14,9 @@ export const AdminDashboard = () => {
   }, []);
 
   return (
+
+
+    
     <div className="container" style={{ padding: '2rem 1.5rem' }}>
       {/* Header */}
       <div style={{ marginBottom: '1.75rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.25rem' }}>
