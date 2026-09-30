@@ -17,26 +17,41 @@ const app = express();
 
 // Security Middlewares
 app.use(helmet());
-app.use(
-  cors({
-    // Production: set FRONTEND_URL=https://your-app.netlify.app in backend .env
-    // Multiple origins can be comma-separated: "https://a.netlify.app,https://b.com"
-    origin: (origin, callback) => {
-      const allowed = (process.env.FRONTEND_URL || 'http://localhost:5173')
-        .split(',')
-        .map(o => o.trim().replace(/\/+$/, ''));
-      const normalizedOrigin = origin ? origin.replace(/\/+$/, '') : origin;
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow non-browser requests (server-to-server, curl, Postman, mobile)
+    if (!origin) return callback(null, true);
 
-      // Allow requests with no origin (curl, Postman, server-to-server), wildcard, or matching origin
-      if (!origin || allowed.includes('*') || allowed.includes(normalizedOrigin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS: origin ${origin} not allowed`));
-      }
-    },
-    credentials: true,
-  })
-);
+    const normalizedOrigin = origin.replace(/\/+$/, '');
+    const allowed = (process.env.FRONTEND_URL || '')
+      .split(',')
+      .map(o => o.trim().replace(/\/+$/, ''))
+      .filter(Boolean);
+
+    // 1. Check if configured in FRONTEND_URL or wildcard
+    if (allowed.includes('*') || allowed.includes(normalizedOrigin)) {
+      return callback(null, true);
+    }
+
+    // 2. Allow any localhost / 127.0.0.1 port (dev)
+    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(normalizedOrigin)) {
+      return callback(null, true);
+    }
+
+    // 3. Automatically allow all Netlify domains (*.netlify.app)
+    if (/^https:\/\/[a-zA-Z0-9-]+\.netlify\.app$/.test(normalizedOrigin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS: origin ${origin} not allowed`));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // Body Parsing Middleware
 app.use(express.json());
