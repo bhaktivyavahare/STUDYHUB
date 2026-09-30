@@ -24,4 +24,6 @@ services:
       # - CLOUDINARY_CLOUD_NAME
       # - CLOUDINARY_API_KEY
       # - CLOUDINARY_API_SECRET
-      # - FRONTEND_URL (your Netlify site URL, e.g. https://your-site.netlify.app)
+      # - ADMIN_ID (e.g. admin@studyhub.com)
+      # - ADMIN_PASSWORD (e.g. Admin@123)
+      # - FRONTEND_URL (your Netlify site URL, e.g. https://studyhub1206.netlify.app)
