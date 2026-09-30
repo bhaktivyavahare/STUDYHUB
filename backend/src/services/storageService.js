@@ -215,9 +215,25 @@ async function deleteFromStorage(storedFilePath) {
   }
 }
 
+async function testCloudinaryConnection() {
+  if (!cloudinaryReady) {
+    return { connected: false, message: 'Credentials missing' };
+  }
+  try {
+    const res = await cloudinary.api.ping();
+    if (res && res.status === 'ok') {
+      return { connected: true, cloudName: CLOUDINARY_CLOUD_NAME, folder: CLOUDINARY_FOLDER };
+    }
+    return { connected: false, message: 'Invalid ping response' };
+  } catch (error) {
+    return { connected: false, message: error.message };
+  }
+}
+
 module.exports = {
   uploadToStorage,
   getSignedUrl,
   getLocalFilePath,
   deleteFromStorage,
+  testCloudinaryConnection,
 };

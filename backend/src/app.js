@@ -50,6 +50,15 @@ app.use('/api/resources', resourceRoutes);
 app.use('/api/engage', engagementRoutes);
 app.use('/api/users', userRoutes);
 
+// Root Route (for Render / load balancer health ping & browser checks)
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'StudyHub API is live and running',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // 404 Route Handler
 app.use((req, res, next) => {
   const error = new Error(`Route not found: ${req.originalUrl}`);

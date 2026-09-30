@@ -115,12 +115,10 @@ async function testConnection() {
     const client = await pgPool.connect();
     const res = await client.query('SELECT current_database() as db');
     const dbName = res.rows[0]?.db || 'Supabase PostgreSQL';
-    console.log(`[Supabase/PostgreSQL] Connected successfully to database: ${dbName}`);
     client.release();
-    return true;
+    return { connected: true, dbName };
   } catch (error) {
-    console.warn(`[Supabase/PostgreSQL] Warning: Could not connect to database (${error.message}).`);
-    return false;
+    return { connected: false, message: error.message };
   }
 }
 
