@@ -19,14 +19,16 @@ const app = express();
 app.use(helmet());
 app.use(
   cors({
-    // Production: set FRONTEND_URL=https://your-app.vercel.app in backend .env
-    // Multiple origins can be comma-separated: "https://a.com,https://b.com"
+    // Production: set FRONTEND_URL=https://your-app.netlify.app in backend .env
+    // Multiple origins can be comma-separated: "https://a.netlify.app,https://b.com"
     origin: (origin, callback) => {
       const allowed = (process.env.FRONTEND_URL || 'http://localhost:5173')
         .split(',')
-        .map(o => o.trim());
-      // Allow requests with no origin (curl, Postman, server-to-server)
-      if (!origin || allowed.includes(origin)) {
+        .map(o => o.trim().replace(/\/+$/, ''));
+      const normalizedOrigin = origin ? origin.replace(/\/+$/, '') : origin;
+
+      // Allow requests with no origin (curl, Postman, server-to-server), wildcard, or matching origin
+      if (!origin || allowed.includes('*') || allowed.includes(normalizedOrigin)) {
         callback(null, true);
       } else {
         callback(new Error(`CORS: origin ${origin} not allowed`));

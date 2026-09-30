@@ -1,0 +1,27 @@
+# ─── Render Configuration for StudyHub Backend ────────────────────────────
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: studyhub-api
+    runtime: node
+    plan: free
+
+    # Build & Start commands
+    buildCommand: npm install
+    startCommand: npm start
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: CLOUDINARY_FOLDER
+        value: studyhub-resources
+
+      # Secret values to provide in Render Dashboard:
+      # - DB_URL
+      # - JWT_SECRET
+      # - CLOUDINARY_CLOUD_NAME
+      # - CLOUDINARY_API_KEY
+      # - CLOUDINARY_API_SECRET
+      # - FRONTEND_URL (your Netlify site URL, e.g. https://your-site.netlify.app)
